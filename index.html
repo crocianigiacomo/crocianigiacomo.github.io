@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giacomo Crociani — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #0A192F;
+      --blue: #1F6FEB;
+      --white: #FFFFFF;
+      --light: #E6EDF3;
+      --navy-mid: #112240;
+      --navy-light: #1d3461;
+      --blue-glow: rgba(31,111,235,0.18);
+      --blue-dim: rgba(31,111,235,0.08);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { background-color: var(--navy); color: var(--light); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; cursor: default; }
+
+    /* CURSOR */
+    .cursor { width: 10px; height: 10px; background: var(--blue); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
+    .cursor-ring { width: 36px; height: 36px; border: 1.5px solid var(--blue); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: transform .15s ease-out; opacity: 0.6; }
+    @media (hover: none) { .cursor, .cursor-ring { display: none; } }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--navy); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 10px; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 3rem; background: rgba(10,25,47,0.88); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(31,111,235,0.12); transition: padding 0.3s; gap: 1rem; }
+    nav.shrunk { padding: 0.8rem 3rem; }
+    .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; color: var(--white); letter-spacing: -0.02em; flex-shrink: 0; }
+    .nav-logo span { color: var(--blue); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--light); text-decoration: none; font-size: 0.82rem; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; position: relative; padding-bottom: 3px; transition: color 0.2s; }
+    .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1.5px; background: var(--blue); transition: width 0.3s ease; }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* LANGUAGE SWITCHER */
+    .lang-switcher { display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0; }
+    .lang-btn { background: none; border: 1px solid transparent; border-radius: 6px; color: rgba(230,237,243,0.4); font-family: 'DM Sans', sans-serif; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.28rem 0.55rem; cursor: pointer; transition: all 0.2s; }
+    .lang-btn:hover { color: var(--blue); border-color: rgba(31,111,235,0.3); }
+    .lang-btn.active { color: var(--blue); border-color: var(--blue); background: var(--blue-dim); }
+    .lang-sep { color: rgba(230,237,243,0.15); font-size: 0.6rem; user-select: none; }
+    .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+
+    /* HAMBURGER */
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--light); border-radius: 2px; transition: all 0.3s; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu { display: none; position: fixed; inset: 0; background: rgba(10,25,47,0.97); z-index: 99; flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem; }
+    .mobile-menu.open { display: flex; animation: fadeIn 0.3s ease; }
+    .mobile-menu a { color: var(--white); text-decoration: none; font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 700; transition: color 0.2s; }
+    .mobile-menu a:hover { color: var(--blue); }
+    .mobile-lang { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+    .mobile-lang .lang-btn { font-size: 0.85rem; padding: 0.4rem 0.9rem; }
+    @media (max-width: 860px) { nav { padding: 1rem 1.5rem; } .nav-links { display: none; } .hamburger { display: flex; } }
+
+    /* SECTIONS */
+    section { min-height: 100vh; padding: 7rem 3rem 4rem; display: flex; flex-direction: column; justify-content: center; position: relative; }
+    .section-inner { max-width: 1100px; margin: 0 auto; width: 100%; }
+    @media (max-width: 768px) { section { padding: 6rem 1.5rem 3rem; } }
+
+    /* SECTION TITLES */
+    .section-eyebrow { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--blue); font-weight: 500; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.8rem; }
+    .section-eyebrow::before { content: ''; display: block; width: 40px; height: 1px; background: var(--blue); }
+    h2.section-title { font-family: 'Syne', sans-serif; font-size: clamp(2rem,4vw,3rem); font-weight: 800; color: var(--white); margin-bottom: 3rem; letter-spacing: -0.03em; }
+
+    /* HERO */
+    #home { min-height: 100vh; display: flex; align-items: center; overflow: hidden; padding: 0; }
+    .hero-bg { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+    .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(31,111,235,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(31,111,235,0.06) 1px,transparent 1px); background-size: 60px 60px; }
+    .hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); animation: pulse 6s ease-in-out infinite; }
+    .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle,rgba(31,111,235,0.15),transparent 70%); top: -100px; right: -100px; }
+    .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle,rgba(31,111,235,0.1),transparent 70%); bottom: -50px; left: 10%; animation-delay: 3s; }
+    @keyframes pulse { 0%,100%{ transform:scale(1);opacity:.8; }50%{ transform:scale(1.1);opacity:1; } }
+    .hero-content { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; width: 100%; padding: 0 3rem; }
+    @media (max-width: 768px) { .hero-content { padding: 0 1.5rem; } }
+    .hero-tag { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; background: var(--blue-dim); border: 1px solid rgba(31,111,235,0.3); border-radius: 100px; font-size: 0.8rem; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.5rem; opacity: 0; animation: slideUp 0.6s ease 0.2s forwards; }
+    .hero-tag::before { content: '●'; font-size: 0.5rem; color: var(--blue); animation: blink 1.5s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1;}50%{opacity:.3;} }
+    h1.hero-name { font-family: 'Syne', sans-serif; font-size: clamp(3rem,8vw,6.5rem); font-weight: 800; line-height: 0.95; letter-spacing: -0.04em; color: var(--white); margin-bottom: 1rem; opacity: 0; animation: slideUp 0.7s ease 0.4s forwards; }
+    h1.hero-name span { color: var(--blue); }
+    .hero-subtitle { font-size: clamp(1rem,2vw,1.25rem); color: var(--light); font-weight: 300; max-width: 540px; line-height: 1.7; margin-bottom: 2.5rem; opacity: 0; animation: slideUp 0.7s ease 0.6s forwards; }
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; opacity: 0; animation: slideUp 0.7s ease 0.8s forwards; }
+    .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 2rem; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.9rem; cursor: pointer; text-decoration: none; transition: all 0.25s ease; letter-spacing: 0.03em; }
+    .btn-primary { background: var(--blue); color: var(--white); border: 1.5px solid var(--blue); }
+    .btn-primary:hover { background: transparent; color: var(--blue); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(31,111,235,0.3); }
+    .btn-outline { background: transparent; color: var(--light); border: 1.5px solid rgba(230,237,243,0.3); }
+    .btn-outline:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-2px); }
+    .hero-scroll { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.4rem; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(230,237,243,0.4); animation: slideUp 1s ease 1.5s both; }
+    .scroll-line { width: 1px; height: 50px; background: linear-gradient(to bottom,var(--blue),transparent); animation: scrollPulse 2s ease-in-out infinite; }
+    @keyframes scrollPulse{0%,100%{transform:scaleY(1);opacity:.6;}50%{transform:scaleY(.7);opacity:1;}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+    /* REVEAL */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1{transition-delay:.1s;}.reveal-delay-2{transition-delay:.2s;}.reveal-delay-3{transition-delay:.3s;}.reveal-delay-4{transition-delay:.4s;}
+    .section-divider { width: 100%; height: 1px; background: linear-gradient(to right,transparent,rgba(31,111,235,0.3),transparent); }
+
+    /* TIMELINE */
+    #istruzione { background: var(--navy); }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(to bottom,var(--blue),rgba(31,111,235,0.1)); }
+    .timeline-item { position: relative; margin-bottom: 3rem; }
+    .timeline-dot { position: absolute; left: -2.4rem; top: 6px; width: 12px; height: 12px; background: var(--blue); border-radius: 50%; border: 2px solid var(--navy); box-shadow: 0 0 0 4px rgba(31,111,235,0.2); }
+    .timeline-period { font-size: 0.75rem; letter-spacing: 0.1em; color: var(--blue); text-transform: uppercase; margin-bottom: 0.4rem; }
+    .timeline-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.15rem; color: var(--white); margin-bottom: 0.2rem; }
+    .timeline-sub { font-size: 0.9rem; color: rgba(230,237,243,0.6); margin-bottom: 0.7rem; }
+    .timeline-body { font-size: 0.9rem; line-height: 1.7; color: var(--light); opacity: 0.8; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
+    .tag { padding: 0.25rem 0.75rem; background: var(--blue-dim); border: 1px solid rgba(31,111,235,0.2); border-radius: 100px; font-size: 0.75rem; color: var(--blue); letter-spacing: 0.05em; }
+
+    /* WORK */
+    #lavoro { background: var(--navy-mid); }
+    .work-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 768px) { .work-grid { grid-template-columns: 1fr; } }
+    .work-card { background: rgba(10,25,47,0.6); border: 1px solid rgba(31,111,235,0.15); border-radius: 12px; padding: 1.8rem; transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s; position: relative; overflow: hidden; }
+    .work-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg,var(--blue),transparent); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
+    .work-card:hover { border-color: rgba(31,111,235,0.4); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    .work-card:hover::before { transform: scaleX(1); }
+    .work-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+    .work-period { font-size: 0.75rem; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.3rem; }
+    .work-role { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--white); margin-bottom: 0.2rem; }
+    .work-company { font-size: 0.85rem; color: rgba(230,237,243,0.5); margin-bottom: 0.8rem; }
+    .work-desc { font-size: 0.875rem; line-height: 1.7; color: rgba(230,237,243,0.75); }
+
+    /* GITHUB */
+    .github-section { margin-top: 4rem; }
+    .github-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    @media (max-width: 900px){.github-grid{grid-template-columns:1fr 1fr;}}
+    @media (max-width: 560px){.github-grid{grid-template-columns:1fr;}}
+    .repo-card { background: rgba(10,25,47,0.5); border: 1px solid rgba(31,111,235,0.12); border-radius: 10px; padding: 1.4rem; text-decoration: none; display: block; transition: all 0.3s; }
+    .repo-card:hover { border-color: var(--blue); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+    .repo-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; color: var(--blue); margin-bottom: 0.5rem; }
+    .repo-desc { font-size: 0.8rem; color: rgba(230,237,243,0.6); line-height: 1.5; margin-bottom: 0.8rem; }
+    .repo-lang { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: rgba(230,237,243,0.5); }
+    .lang-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .lang-python{background:#3572A5;}.lang-java{background:#b07219;}.lang-c{background:#555555;}
+
+    /* SKILLS */
+    #softskills { background: var(--navy); }
+    .skills-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1.5rem; }
+    @media (max-width: 640px){.skills-grid{grid-template-columns:1fr;}}
+    .skill-card { background: var(--navy-mid); border: 1px solid rgba(31,111,235,0.12); border-radius: 12px; padding: 2rem; display: flex; gap: 1.2rem; align-items: flex-start; transition: all 0.3s; }
+    .skill-card:hover { border-color: rgba(31,111,235,0.35); box-shadow: 0 8px 30px rgba(0,0,0,0.2); transform: translateY(-3px); }
+    .skill-icon { width: 52px; height: 52px; background: var(--blue-dim); border: 1px solid rgba(31,111,235,0.25); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+    .skill-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; color: var(--white); margin-bottom: 0.4rem; }
+    .skill-desc { font-size: 0.875rem; line-height: 1.65; color: rgba(230,237,243,0.7); }
+    .tech-section { margin-top: 4rem; }
+    .tech-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem; color: var(--white); margin-bottom: 1.5rem; }
+    .tech-grid { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .tech-pill { padding: 0.45rem 1.1rem; background: var(--navy-mid); border: 1px solid rgba(31,111,235,0.2); border-radius: 100px; font-size: 0.8rem; color: var(--light); transition: all 0.25s; }
+    .tech-pill:hover { background: var(--blue-dim); border-color: var(--blue); color: var(--white); }
+
+    /* HOBBY */
+    #hobby { background: var(--navy-mid); }
+    .hobby-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    @media (max-width: 768px){.hobby-grid{grid-template-columns:1fr;}}
+    .hobby-card { border-radius: 16px; padding: 2.5rem 2rem; text-align: center; position: relative; overflow: hidden; transition: transform 0.4s ease, box-shadow 0.4s ease; }
+    .hobby-card::before { content: ''; position: absolute; inset: 0; border-radius: 16px; padding: 1.5px; background: linear-gradient(135deg,rgba(31,111,235,0.5),transparent 60%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+    .hobby-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.35); }
+    .hobby-bg { position: absolute; inset: 0; background: rgba(10,25,47,0.6); border-radius: 16px; }
+    .hobby-content { position: relative; z-index: 1; }
+    .hobby-emoji { font-size: 3rem; margin-bottom: 1rem; display: block; }
+    .hobby-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem; color: var(--white); margin-bottom: 0.6rem; }
+    .hobby-desc { font-size: 0.875rem; color: rgba(230,237,243,0.7); line-height: 1.6; }
+
+    /* CONTACT */
+    #contatti { background: var(--navy); }
+    .contact-wrapper { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: start; }
+    @media (max-width: 768px){.contact-wrapper{grid-template-columns:1fr;gap:2.5rem;}}
+    .contact-lead { font-size: clamp(1rem,2vw,1.15rem); line-height: 1.8; color: rgba(230,237,243,0.75); margin-bottom: 2rem; }
+    .contact-links { display: flex; flex-direction: column; gap: 1rem; }
+    .contact-link { display: flex; align-items: center; gap: 1rem; color: var(--light); text-decoration: none; padding: 1rem 1.2rem; background: var(--navy-mid); border: 1px solid rgba(31,111,235,0.12); border-radius: 10px; transition: all 0.3s; }
+    .contact-link:hover { border-color: var(--blue); color: var(--white); transform: translateX(6px); background: var(--blue-dim); }
+    .contact-link-icon { width: 40px; height: 40px; background: var(--blue-dim); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .contact-label { font-weight: 500; color: var(--white); font-size: 0.85rem; margin-bottom: 2px; }
+    .contact-value { font-size: 0.8rem; opacity: 0.6; }
+
+    /* FOOTER */
+    footer { text-align: center; padding: 2rem; border-top: 1px solid rgba(31,111,235,0.1); font-size: 0.8rem; color: rgba(230,237,243,0.3); }
+    footer span { color: var(--blue); }
+
+    /* LANG TRANSITION */
+    .lang-fade * { animation: langFade 0.3s ease; }
+    @keyframes langFade{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">GC<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#home"        data-i18n="nav.home">Home</a></li>
+    <li><a href="#istruzione"  data-i18n="nav.edu">Istruzione</a></li>
+    <li><a href="#lavoro"      data-i18n="nav.work">Lavoro</a></li>
+    <li><a href="#softskills"  data-i18n="nav.skills">Skills</a></li>
+    <li><a href="#hobby"       data-i18n="nav.hobby">Hobby</a></li>
+    <li><a href="#contatti"    data-i18n="nav.contact">Contatti</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="it">IT</button>
+      <span class="lang-sep">|</span>
+      <button class="lang-btn" data-lang="en">EN</button>
+      <span class="lang-sep">|</span>
+      <button class="lang-btn" data-lang="es">ES</button>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home"        class="mobile-link" data-i18n="nav.home">Home</a>
+  <a href="#istruzione"  class="mobile-link" data-i18n="nav.edu">Istruzione</a>
+  <a href="#lavoro"      class="mobile-link" data-i18n="nav.work">Lavoro</a>
+  <a href="#softskills"  class="mobile-link" data-i18n="nav.skills">Skills</a>
+  <a href="#hobby"       class="mobile-link" data-i18n="nav.hobby">Hobby</a>
+  <a href="#contatti"    class="mobile-link" data-i18n="nav.contact">Contatti</a>
+  <div class="mobile-lang">
+    <button class="lang-btn active" data-lang="it">IT</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="es">ES</button>
+  </div>
+</div>
+
+<!-- ══════ HERO ══════ -->
+<section id="home">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-tag" data-i18n="hero.tag">Disponibile per nuove opportunità</div>
+    <h1 class="hero-name">Giacomo<br><span>Crociani</span></h1>
+    <p class="hero-subtitle" data-i18n="hero.subtitle">Informatico con una laurea in Informatica per le Aziende Digitali e un background variegato tra modellazione 3D, sviluppo software e gestione di eventi. Appassionato di dati, web e nuove tecnologie.</p>
+    <div class="hero-cta">
+      <a href="#contatti" class="btn btn-primary" data-i18n="hero.cta1">Contattami →</a>
+      <a href="#lavoro"   class="btn btn-outline"  data-i18n="hero.cta2">Vedi il mio percorso</a>
+    </div>
+  </div>
+  <div class="hero-scroll"><span data-i18n="hero.scroll">Scroll</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- ══════ ISTRUZIONE ══════ -->
+<section id="istruzione">
+  <div class="section-inner">
+    <div class="section-eyebrow reveal" data-i18n="edu.eyebrow">Percorso accademico</div>
+    <h2 class="section-title reveal" data-i18n="edu.title">Istruzione</h2>
+    <div class="timeline">
+
+      <div class="timeline-item reveal reveal-delay-1">
+        <div class="timeline-dot"></div>
+        <div class="timeline-period" data-i18n="edu.p1.period">2024 – In corso</div>
+        <div class="timeline-title" data-i18n="edu.p1.title">Laurea in Informatica per le Aziende Digitali (L-31)</div>
+        <div class="timeline-sub">Università Telematica Pegaso — Napoli</div>
+        <div class="timeline-body" data-i18n="edu.p1.body">Proseguimento del percorso di laurea iniziato a Firenze. Materie conclusive: Calcolo, Probabilità e Statistica, Programmazione 2, Reti di Calcolatori e Cybersecurity, Tecnologie Web.</div>
+        <div class="tag-row"><span class="tag">Python</span><span class="tag">SQL</span><span class="tag">HTML/CSS</span><span class="tag">JavaScript</span><span class="tag">Cybersecurity</span></div>
+      </div>
+
+      <div class="timeline-item reveal reveal-delay-2">
+        <div class="timeline-dot"></div>
+        <div class="timeline-period">2020 – 2024</div>
+        <div class="timeline-title" data-i18n="edu.p2.title">Informatica L-31</div>
+        <div class="timeline-sub">Università degli Studi di Firenze — Firenze</div>
+        <div class="timeline-body" data-i18n="edu.p2.body">Corso di laurea triennale in informatica con focus su algoritmi, architetture, basi di dati, sistemi operativi e programmazione concorrente. Erasmus di 5 mesi a Madrid con esami di Robotica e Ingegneria del Software.</div>
+        <div class="tag-row">
+          <span class="tag" data-i18n="tag.algo">Algoritmi &amp; Strutture Dati</span>
+          <span class="tag" data-i18n="tag.db">Basi di Dati</span>
+          <span class="tag" data-i18n="tag.so">Sistemi Operativi</span>
+          <span class="tag">Erasmus Madrid 🇪🇸</span>
+          <span class="tag" data-i18n="tag.rob">Robotica</span>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal reveal-delay-3">
+        <div class="timeline-dot"></div>
+        <div class="timeline-period">2017 – 2018</div>
+        <div class="timeline-title" data-i18n="edu.p3.title">Tecnico della Progettazione, Modellazione e Rendering per il Mobile</div>
+        <div class="timeline-sub">Centro Sperimentale del Mobile — Poggibonsi</div>
+        <div class="timeline-body" data-i18n="edu.p3.body">Corso professionale con focus su modellazione 3D (AutoCAD, Rhinoceros), editing immagini con Photoshop, progettazione CAD 2D e rendering con Blender.</div>
+        <div class="tag-row"><span class="tag">AutoCAD</span><span class="tag">Rhinoceros</span><span class="tag">Blender</span><span class="tag">Photoshop</span></div>
+      </div>
+
+      <div class="timeline-item reveal reveal-delay-4">
+        <div class="timeline-dot"></div>
+        <div class="timeline-period">2015 – 2017</div>
+        <div class="timeline-title" data-i18n="edu.p4.title">Ingegneria Gestionale (non conclusa)</div>
+        <div class="timeline-sub">Alma Mater Studiorum — Bologna</div>
+        <div class="timeline-body" data-i18n="edu.p4.body">Prima esperienza universitaria, interrotta per riorientare il percorso verso una passione più autentica per l'informatica.</div>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-period">2010 – 2015</div>
+        <div class="timeline-title" data-i18n="edu.p5.title">Diploma Liceo Scientifico — 75/100</div>
+        <div class="timeline-sub">Liceo A. Poliziano — Montepulciano</div>
+        <div class="timeline-body" data-i18n="edu.p5.body">Formazione con forte base scientifica: matematica, fisica e chimica.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════ LAVORO ══════ -->
+<section id="lavoro">
+  <div class="section-inner">
+    <div class="section-eyebrow reveal" data-i18n="work.eyebrow">Esperienze professionali</div>
+    <h2 class="section-title reveal" data-i18n="work.title">Lavoro</h2>
+    <div class="work-grid">
+
+      <div class="work-card reveal reveal-delay-1">
+        <div class="work-icon">🎪</div>
+        <div class="work-period" data-i18n="work.w1.period">2015 – Attuale</div>
+        <div class="work-role" data-i18n="work.w1.role">Organizzatore di Eventi</div>
+        <div class="work-company">SIRSTAFF</div>
+        <div class="work-desc" data-i18n="work.w1.desc">Gestione logistica e allestimento di eventi notturni. Coordinamento con fornitori e proprietari di locali, gestione della contabilità e redazione del bilancio finale.</div>
+        <div class="tag-row"><span class="tag" data-i18n="tag.log">Logistica</span><span class="tag" data-i18n="tag.acc">Contabilità</span><span class="tag" data-i18n="tag.sup">Fornitori</span></div>
+      </div>
+
+      <div class="work-card reveal reveal-delay-2">
+        <div class="work-icon">✈️</div>
+        <div class="work-period" data-i18n="work.w2.period">Gen 2020 – Lug 2020</div>
+        <div class="work-role" data-i18n="work.w2.role">Operatore Call Center</div>
+        <div class="work-company">SITEL — Siviglia 🇪🇸</div>
+        <div class="work-desc" data-i18n="work.w2.desc">Gestione informazioni bagagli, reclami per ritardi, cancellazioni, rimborsi e smarrimenti. Front office telefonico e gestione ticket via email.</div>
+        <div class="tag-row"><span class="tag">Customer Service</span><span class="tag">Email Ticketing</span><span class="tag">Front Office</span></div>
+      </div>
+
+      <div class="work-card reveal reveal-delay-3">
+        <div class="work-icon">🧊</div>
+        <div class="work-period" data-i18n="work.w3.period">Mag 2018 – Mag 2019</div>
+        <div class="work-role" data-i18n="work.w3.role">Tecnico Modellazione 3D</div>
+        <div class="work-company">STOSA S.p.A. — Radicofani</div>
+        <div class="work-desc" data-i18n="work.w3.desc">Realizzazione di circa 9.000 modelli 3D di elettrodomestici per il programma di realtà virtuale Virtuo. Inserimento dati in Excel e database SQL con query di aggiunta, ricerca e aggiornamento. Editing texture con Photoshop.</div>
+        <div class="tag-row"><span class="tag">3D Modeling</span><span class="tag">SQL</span><span class="tag">Excel</span><span class="tag">Photoshop</span></div>
+      </div>
+
+      <div class="work-card reveal reveal-delay-4">
+        <div class="work-icon">🏊</div>
+        <div class="work-period" data-i18n="work.w4.period">Stagioni 2017–2025</div>
+        <div class="work-role" data-i18n="work.w4.role">Bagnino</div>
+        <div class="work-company">Parco delle Piscine — Sarteano</div>
+        <div class="work-desc" data-i18n="work.w4.desc">Lavoro stagionale ripetuto per più anni (2017, 2019, 2022, 2023, 2024, 2025). Supervisione vasca, cura della pulizia e degli spazi circostanti, rapporto con la clientela.</div>
+        <div class="tag-row"><span class="tag" data-i18n="tag.saf">Sicurezza</span><span class="tag">Customer Care</span><span class="tag" data-i18n="tag.sea">Stagionale</span></div>
+      </div>
+
+    </div>
+
+    <div class="github-section reveal">
+      <div class="section-eyebrow" style="margin-bottom:1rem;" data-i18n="work.github">Progetti su GitHub</div>
+      <div class="github-grid">
+        <a href="https://github.com/crocianigiacomo/DashboardAGTorroni" target="_blank" class="repo-card">
+          <div class="repo-name">📊 DashboardAGTorroni</div>
+          <div class="repo-desc" data-i18n="repo.r1">Dashboard interattiva per la visualizzazione e analisi di dati.</div>
+          <div class="repo-lang"><span class="lang-dot lang-python"></span> Python</div>
+        </a>
+        <a href="https://github.com/crocianigiacomo/stats_partite_db" target="_blank" class="repo-card">
+          <div class="repo-name">⚽ Stats Partite DB</div>
+          <div class="repo-desc" data-i18n="repo.r2">Raccolta ed elaborazione statistiche partite delle principali leghe europee con database SQL.</div>
+          <div class="repo-lang"><span class="lang-dot lang-python"></span> Python</div>
+        </a>
+        <a href="https://github.com/crocianigiacomo/stats_partite_csv" target="_blank" class="repo-card">
+          <div class="repo-name">📈 Stats Partite CSV</div>
+          <div class="repo-desc" data-i18n="repo.r3">Raccolta e analisi dati partite delle leghe europee con elaborazione file CSV.</div>
+          <div class="repo-lang"><span class="lang-dot lang-python"></span> Python</div>
+        </a>
+        <a href="https://github.com/crocianigiacomo/rob-lab" target="_blank" class="repo-card">
+          <div class="repo-name">🤖 Rob-Lab</div>
+          <div class="repo-desc" data-i18n="repo.r4">Laboratorio di robotica sviluppato durante l'Erasmus a Madrid. Progetto in C.</div>
+          <div class="repo-lang"><span class="lang-dot lang-c"></span> C</div>
+        </a>
+        <a href="https://github.com/crocianigiacomo/PlantsVsZombie" target="_blank" class="repo-card">
+          <div class="repo-name">🌿 PlantsVsZombie</div>
+          <div class="repo-desc" data-i18n="repo.r5">Videogioco ispirato a Plants vs. Zombies, sviluppato in Java come progetto universitario.</div>
+          <div class="repo-lang"><span class="lang-dot lang-java"></span> Java</div>
+        </a>
+        <a href="https://github.com/crocianigiacomo" target="_blank" class="repo-card" style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5rem;min-height:120px;">
+          <div style="font-size:1.5rem;">→</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--blue);font-size:.95rem;" data-i18n="repo.all">Vedi tutti i progetti</div>
+          <div style="font-size:.8rem;color:rgba(230,237,243,.5);">github.com/crocianigiacomo</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════ SOFT SKILLS ══════ -->
+<section id="softskills">
+  <div class="section-inner">
+    <div class="section-eyebrow reveal" data-i18n="skills.eyebrow">Competenze</div>
+    <h2 class="section-title reveal" data-i18n="skills.title">Soft Skills &amp; Tecnologie</h2>
+    <div class="skills-grid">
+
+      <div class="skill-card reveal reveal-delay-1">
+        <div class="skill-icon">🧩</div>
+        <div><div class="skill-name" data-i18n="skills.s1.name">Problem Solving</div>
+        <div class="skill-desc" data-i18n="skills.s1.desc">Ho sviluppato questa attitudine sin dagli studi in ingegneria, affinandola attraverso lo sviluppo di progetti software, la modellazione di 9.000 asset 3D e la gestione di situazioni critiche nel customer care.</div></div>
+      </div>
+      <div class="skill-card reveal reveal-delay-2">
+        <div class="skill-icon">🤝</div>
+        <div><div class="skill-name" data-i18n="skills.s2.name">Lavoro in Team</div>
+        <div class="skill-desc" data-i18n="skills.s2.desc">L'organizzazione di eventi mi ha insegnato a coordinare team eterogenei sotto pressione. L'esperienza Erasmus ha ulteriormente sviluppato la mia capacità di collaborare in contesti multiculturali.</div></div>
+      </div>
+      <div class="skill-card reveal reveal-delay-3">
+        <div class="skill-icon">💬</div>
+        <div><div class="skill-name" data-i18n="skills.s3.name">Comunicazione</div>
+        <div class="skill-desc" data-i18n="skills.s3.desc">Anni di front office nel call center e di gestione diretta della clientela mi hanno reso capace di comunicare in modo chiaro, empatico ed efficace, anche in spagnolo (esperienza a Siviglia).</div></div>
+      </div>
+      <div class="skill-card reveal reveal-delay-4">
+        <div class="skill-icon">📋</div>
+        <div><div class="skill-name" data-i18n="skills.s4.name">Organizzazione &amp; Gestione</div>
+        <div class="skill-desc" data-i18n="skills.s4.desc">Dalla pianificazione logistica degli eventi alla gestione di database con migliaia di record: mi caratterizza una forte attitudine all'organizzazione sistematica e alla gestione delle priorità.</div></div>
+      </div>
+
+    </div>
+    <div class="tech-section reveal">
+      <div class="tech-title" data-i18n="skills.stack">Stack Tecnologico</div>
+      <div class="tech-grid">
+        <span class="tech-pill">Python</span><span class="tech-pill">SQL / MySQL</span>
+        <span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">JavaScript</span>
+        <span class="tech-pill">Java</span><span class="tech-pill">C</span>
+        <span class="tech-pill">Excel / Google Sheets</span><span class="tech-pill">AutoCAD</span>
+        <span class="tech-pill">Blender</span><span class="tech-pill">Rhinoceros</span><span class="tech-pill">Photoshop</span>
+        <span class="tech-pill">Git / GitHub</span><span class="tech-pill">Linux</span>
+        <span class="tech-pill" data-i18n="skills.cyber">Cybersecurity (base)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════ HOBBY ══════ -->
+<section id="hobby">
+  <div class="section-inner">
+    <div class="section-eyebrow reveal" data-i18n="hobby.eyebrow">Chi sono fuori dall'ufficio</div>
+    <h2 class="section-title reveal" data-i18n="hobby.title">Hobby &amp; Passioni</h2>
+    <div class="hobby-grid">
+
+      <div class="hobby-card reveal reveal-delay-1">
+        <div class="hobby-bg"></div>
+        <div class="hobby-content">
+          <span class="hobby-emoji">🏋️</span>
+          <div class="hobby-name" data-i18n="hobby.h1.name">Sport &amp; Attività Fisica</div>
+          <div class="hobby-desc" data-i18n="hobby.h1.desc">Ho lavorato per anni come bagnino, il che riflette il mio rapporto costante con il movimento fisico. Che si tratti di nuoto, palestra o sport all'aria aperta, la cura del corpo è parte integrante del mio stile di vita.</div>
+        </div>
+      </div>
+      <div class="hobby-card reveal reveal-delay-2">
+        <div class="hobby-bg"></div>
+        <div class="hobby-content">
+          <span class="hobby-emoji">🎵</span>
+          <div class="hobby-name" data-i18n="hobby.h2.name">Musica &amp; Arte</div>
+          <div class="hobby-desc" data-i18n="hobby.h2.desc">La creatività è un tratto che attraversa tutta la mia vita, dalla modellazione 3D artistica al senso estetico che applico nei miei progetti digitali. La musica è la colonna sonora di ogni mia giornata.</div>
+        </div>
+      </div>
+      <div class="hobby-card reveal reveal-delay-3">
+        <div class="hobby-bg"></div>
+        <div class="hobby-content">
+          <span class="hobby-emoji">✈️</span>
+          <div class="hobby-name" data-i18n="hobby.h3.name">Viaggi &amp; Esperienze</div>
+          <div class="hobby-desc" data-i18n="hobby.h3.desc">L'Erasmus a Madrid e il lavoro a Siviglia hanno acceso in me la passione per i viaggi e le culture diverse. Confrontarsi con realtà nuove è per me una fonte inesauribile di crescita personale.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════ CONTATTI ══════ -->
+<section id="contatti">
+  <div class="section-inner">
+    <div class="section-eyebrow reveal" data-i18n="contact.eyebrow">Parliamo</div>
+    <h2 class="section-title reveal" data-i18n="contact.title">Contatti</h2>
+    <div class="contact-wrapper">
+      <div class="reveal">
+        <p class="contact-lead" data-i18n="contact.lead">Sono aperto a nuove opportunità lavorative, collaborazioni su progetti digitali o semplicemente a una bella chiacchierata sul mondo tech. Non esitare a contattarmi!</p>
+        <a href="mailto:crociani.giacomo@gmail.com" class="btn btn-primary" data-i18n="contact.btn">Scrivimi una email →</a>
+      </div>
+      <div class="contact-links reveal reveal-delay-2">
+        <a href="mailto:crociani.giacomo@gmail.com" class="contact-link">
+          <div class="contact-link-icon">✉️</div>
+          <div><div class="contact-label">Email</div><div class="contact-value">crociani.giacomo@gmail.com</div></div>
+        </a>
+        <a href="tel:+393339595605" class="contact-link">
+          <div class="contact-link-icon">📱</div>
+          <div><div class="contact-label" data-i18n="contact.phone">Telefono</div><div class="contact-value">+39 333 9595605</div></div>
+        </a>
+        <a href="https://www.linkedin.com/in/giacomo-crociani-543353161/" target="_blank" class="contact-link">
+          <div class="contact-link-icon">💼</div>
+          <div><div class="contact-label">LinkedIn</div><div class="contact-value">giacomo-crociani-543353161</div></div>
+        </a>
+        <a href="https://github.com/crocianigiacomo" target="_blank" class="contact-link">
+          <div class="contact-link-icon">⌨️</div>
+          <div><div class="contact-label">GitHub</div><div class="contact-value">github.com/crocianigiacomo</div></div>
+        </a>
+        <div class="contact-link" style="cursor:default;">
+          <div class="contact-link-icon">📍</div>
+          <div><div class="contact-label" data-i18n="contact.loc.label">Posizione</div><div class="contact-value" data-i18n="contact.loc.value">Sarteano (SI), Toscana — Italia</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span data-i18n="footer.made">Fatto</span> con ♥ &amp; <span>Claude</span> · Giacomo Crociani © 2026
+</footer>
+
+<script>
+// ═══════════════════════════ TRANSLATIONS ═══════════════════════════
+const i18n = {
+  it: {
+    "nav.home":"Home","nav.edu":"Istruzione","nav.work":"Lavoro","nav.skills":"Skills","nav.hobby":"Hobby","nav.contact":"Contatti",
+    "hero.tag":"Disponibile per nuove opportunità",
+    "hero.subtitle":"Informatico con una laurea in Informatica per le Aziende Digitali e un background variegato tra modellazione 3D, sviluppo software e gestione di eventi. Appassionato di dati, web e nuove tecnologie.",
+    "hero.cta1":"Contattami →","hero.cta2":"Vedi il mio percorso","hero.scroll":"Scroll",
+    "edu.eyebrow":"Percorso accademico","edu.title":"Istruzione",
+    "edu.p1.period":"2024 – In corso",
+    "edu.p1.title":"Laurea in Informatica per le Aziende Digitali (L-31)",
+    "edu.p1.body":"Proseguimento del percorso di laurea iniziato a Firenze. Materie conclusive: Calcolo, Probabilità e Statistica, Programmazione 2, Reti di Calcolatori e Cybersecurity, Tecnologie Web.",
+    "edu.p2.title":"Informatica L-31",
+    "edu.p2.body":"Corso di laurea triennale in informatica con focus su algoritmi, architetture, basi di dati, sistemi operativi e programmazione concorrente. Erasmus di 5 mesi a Madrid con esami di Robotica e Ingegneria del Software.",
+    "edu.p3.title":"Tecnico della Progettazione, Modellazione e Rendering per il Mobile",
+    "edu.p3.body":"Corso professionale con focus su modellazione 3D (AutoCAD, Rhinoceros), editing immagini con Photoshop, progettazione CAD 2D e rendering con Blender.",
+    "edu.p4.title":"Ingegneria Gestionale (non conclusa)",
+    "edu.p4.body":"Prima esperienza universitaria, interrotta per riorientare il percorso verso una passione più autentica per l'informatica.",
+    "edu.p5.title":"Diploma Liceo Scientifico — 75/100",
+    "edu.p5.body":"Formazione con forte base scientifica: matematica, fisica e chimica.",
+    "tag.algo":"Algoritmi & Strutture Dati","tag.db":"Basi di Dati","tag.so":"Sistemi Operativi","tag.rob":"Robotica",
+    "tag.log":"Logistica","tag.acc":"Contabilità","tag.sup":"Fornitori","tag.saf":"Sicurezza","tag.sea":"Stagionale",
+    "work.eyebrow":"Esperienze professionali","work.title":"Lavoro",
+    "work.w1.period":"2015 – Attuale","work.w1.role":"Organizzatore di Eventi",
+    "work.w1.desc":"Gestione logistica e allestimento di eventi notturni. Coordinamento con fornitori e proprietari di locali, gestione della contabilità e redazione del bilancio finale.",
+    "work.w2.period":"Gen 2020 – Lug 2020","work.w2.role":"Operatore Call Center",
+    "work.w2.desc":"Gestione informazioni bagagli, reclami per ritardi, cancellazioni, rimborsi e smarrimenti. Front office telefonico e gestione ticket via email.",
+    "work.w3.period":"Mag 2018 – Mag 2019","work.w3.role":"Tecnico Modellazione 3D",
+    "work.w3.desc":"Realizzazione di circa 9.000 modelli 3D di elettrodomestici per il programma di realtà virtuale Virtuo. Inserimento dati in Excel e database SQL con query di aggiunta, ricerca e aggiornamento. Editing texture con Photoshop.",
+    "work.w4.period":"Stagioni 2017–2025","work.w4.role":"Bagnino",
+    "work.w4.desc":"Lavoro stagionale ripetuto per più anni (2017, 2019, 2022, 2023, 2024, 2025). Supervisione vasca, cura della pulizia e degli spazi circostanti, rapporto con la clientela.",
+    "work.github":"Progetti su GitHub",
+    "repo.r1":"Dashboard interattiva per la visualizzazione e analisi di dati.",
+    "repo.r2":"Raccolta ed elaborazione statistiche partite delle principali leghe europee con database SQL.",
+    "repo.r3":"Raccolta e analisi dati partite delle leghe europee con elaborazione file CSV.",
+    "repo.r4":"Laboratorio di robotica sviluppato durante l'Erasmus a Madrid. Progetto in C.",
+    "repo.r5":"Videogioco ispirato a Plants vs. Zombies, sviluppato in Java come progetto universitario.",
+    "repo.all":"Vedi tutti i progetti",
+    "skills.eyebrow":"Competenze","skills.title":"Soft Skills & Tecnologie",
+    "skills.s1.name":"Problem Solving","skills.s1.desc":"Ho sviluppato questa attitudine sin dagli studi in ingegneria, affinandola attraverso lo sviluppo di progetti software, la modellazione di 9.000 asset 3D e la gestione di situazioni critiche nel customer care.",
+    "skills.s2.name":"Lavoro in Team","skills.s2.desc":"L'organizzazione di eventi mi ha insegnato a coordinare team eterogenei sotto pressione. L'esperienza Erasmus ha ulteriormente sviluppato la mia capacità di collaborare in contesti multiculturali.",
+    "skills.s3.name":"Comunicazione","skills.s3.desc":"Anni di front office nel call center e di gestione diretta della clientela mi hanno reso capace di comunicare in modo chiaro, empatico ed efficace, anche in spagnolo (esperienza a Siviglia).",
+    "skills.s4.name":"Organizzazione & Gestione","skills.s4.desc":"Dalla pianificazione logistica degli eventi alla gestione di database con migliaia di record: mi caratterizza una forte attitudine all'organizzazione sistematica e alla gestione delle priorità.",
+    "skills.stack":"Stack Tecnologico","skills.cyber":"Cybersecurity (base)",
+    "hobby.eyebrow":"Chi sono fuori dall'ufficio","hobby.title":"Hobby & Passioni",
+    "hobby.h1.name":"Sport & Attività Fisica","hobby.h1.desc":"Ho lavorato per anni come bagnino, il che riflette il mio rapporto costante con il movimento fisico. Che si tratti di nuoto, palestra o sport all'aria aperta, la cura del corpo è parte integrante del mio stile di vita.",
+    "hobby.h2.name":"Musica & Arte","hobby.h2.desc":"La creatività è un tratto che attraversa tutta la mia vita, dalla modellazione 3D artistica al senso estetico che applico nei miei progetti digitali. La musica è la colonna sonora di ogni mia giornata.",
+    "hobby.h3.name":"Viaggi & Esperienze","hobby.h3.desc":"L'Erasmus a Madrid e il lavoro a Siviglia hanno acceso in me la passione per i viaggi e le culture diverse. Confrontarsi con realtà nuove è per me una fonte inesauribile di crescita personale.",
+    "contact.eyebrow":"Parliamo","contact.title":"Contatti",
+    "contact.lead":"Sono aperto a nuove opportunità lavorative, collaborazioni su progetti digitali o semplicemente a una bella chiacchierata sul mondo tech. Non esitare a contattarmi!",
+    "contact.btn":"Scrivimi una email →","contact.phone":"Telefono",
+    "contact.loc.label":"Posizione","contact.loc.value":"Sarteano (SI), Toscana — Italia",
+    "footer.made":"Fatto"
+  },
+  en: {
+    "nav.home":"Home","nav.edu":"Education","nav.work":"Work","nav.skills":"Skills","nav.hobby":"Hobbies","nav.contact":"Contact",
+    "hero.tag":"Open to new opportunities",
+    "hero.subtitle":"Computer Science graduate with a degree in Digital Business Informatics and a diverse background spanning 3D modelling, software development and event management. Passionate about data, the web and emerging technologies.",
+    "hero.cta1":"Contact me →","hero.cta2":"See my journey","hero.scroll":"Scroll",
+    "edu.eyebrow":"Academic background","edu.title":"Education",
+    "edu.p1.period":"2024 – Ongoing",
+    "edu.p1.title":"Bachelor's Degree in Digital Business Informatics (L-31)",
+    "edu.p1.body":"Continuation of the degree begun in Florence. Final subjects: Calculus, Probability & Statistics, Programming 2, Computer Networks & Cybersecurity, Web Technologies.",
+    "edu.p2.title":"Computer Science L-31",
+    "edu.p2.body":"Three-year Bachelor's in Computer Science covering algorithms, architectures, databases, operating systems and concurrent programming. 5-month Erasmus in Madrid with courses in Robotics and Software Engineering.",
+    "edu.p3.title":"Technician in Design, 3D Modelling and Rendering for Furniture",
+    "edu.p3.body":"Vocational course focused on 3D modelling (AutoCAD, Rhinoceros), image editing with Photoshop, 2D CAD design and rendering with Blender.",
+    "edu.p4.title":"Industrial Engineering (incomplete)",
+    "edu.p4.body":"First university experience, discontinued to redirect towards a more genuine passion for computer science.",
+    "edu.p5.title":"Scientific High School Diploma — 75/100",
+    "edu.p5.body":"Strong scientific foundation: mathematics, physics and chemistry.",
+    "tag.algo":"Algorithms & Data Structures","tag.db":"Databases","tag.so":"Operating Systems","tag.rob":"Robotics",
+    "tag.log":"Logistics","tag.acc":"Accounting","tag.sup":"Suppliers","tag.saf":"Safety","tag.sea":"Seasonal",
+    "work.eyebrow":"Professional experience","work.title":"Work",
+    "work.w1.period":"2015 – Present","work.w1.role":"Event Organiser",
+    "work.w1.desc":"Logistics management and setup of nightlife events. Coordination with suppliers and venue owners, accounting management and final budget preparation.",
+    "work.w2.period":"Jan 2020 – Jul 2020","work.w2.role":"Call Centre Operator",
+    "work.w2.desc":"Baggage information management, claims for delays, cancellations, refunds and lost items. Telephone front office and email ticket management.",
+    "work.w3.period":"May 2018 – May 2019","work.w3.role":"3D Modelling Technician",
+    "work.w3.desc":"Created approximately 9,000 3D models of household appliances for the virtual reality programme Virtuo. Data entry in Excel and SQL database with add, search and update queries. Texture editing with Photoshop.",
+    "work.w4.period":"Seasons 2017–2025","work.w4.role":"Lifeguard",
+    "work.w4.desc":"Seasonal work repeated over several years (2017, 2019, 2022, 2023, 2024, 2025). Pool supervision, maintenance of cleanliness and surrounding areas, customer relations.",
+    "work.github":"GitHub Projects",
+    "repo.r1":"Interactive dashboard for data visualisation and analysis.",
+    "repo.r2":"Collection and processing of match statistics from the main European leagues using a SQL database.",
+    "repo.r3":"Collection and analysis of match data from European leagues using CSV file processing.",
+    "repo.r4":"Robotics lab developed during the Erasmus in Madrid. Project written in C.",
+    "repo.r5":"Video game inspired by Plants vs. Zombies, developed in Java as a university project.",
+    "repo.all":"View all projects",
+    "skills.eyebrow":"Competencies","skills.title":"Soft Skills & Technologies",
+    "skills.s1.name":"Problem Solving","skills.s1.desc":"I developed this mindset through engineering studies, refining it via software projects, the modelling of 9,000 3D assets and handling critical customer care situations.",
+    "skills.s2.name":"Teamwork","skills.s2.desc":"Event organising taught me to coordinate diverse teams under pressure. The Erasmus experience further developed my ability to collaborate in multicultural settings.",
+    "skills.s3.name":"Communication","skills.s3.desc":"Years of telephone front office and direct customer management have made me an effective, empathetic communicator — including in Spanish, thanks to my experience in Seville.",
+    "skills.s4.name":"Organisation & Management","skills.s4.desc":"From event logistics planning to managing databases with thousands of records: I am characterised by a strong aptitude for systematic organisation and priority management.",
+    "skills.stack":"Tech Stack","skills.cyber":"Cybersecurity (basic)",
+    "hobby.eyebrow":"Who I am outside the office","hobby.title":"Hobbies & Passions",
+    "hobby.h1.name":"Sport & Physical Activity","hobby.h1.desc":"Working as a lifeguard for years reflects my constant relationship with physical movement. Whether swimming, gym or outdoor sports, taking care of my body is an integral part of my lifestyle.",
+    "hobby.h2.name":"Music & Art","hobby.h2.desc":"Creativity runs through everything I do, from artistic 3D modelling to the aesthetic sensibility I bring to my digital projects. Music is the soundtrack of every day.",
+    "hobby.h3.name":"Travel & Experiences","hobby.h3.desc":"The Erasmus in Madrid and work in Seville ignited my passion for travel and different cultures. Encountering new realities is for me an inexhaustible source of personal growth.",
+    "contact.eyebrow":"Let's talk","contact.title":"Contact",
+    "contact.lead":"I am open to new job opportunities, digital project collaborations or simply a good conversation about the tech world. Don't hesitate to get in touch!",
+    "contact.btn":"Send me an email →","contact.phone":"Phone",
+    "contact.loc.label":"Location","contact.loc.value":"Sarteano (SI), Tuscany — Italy",
+    "footer.made":"Made"
+  },
+  es: {
+    "nav.home":"Inicio","nav.edu":"Formación","nav.work":"Experiencia","nav.skills":"Skills","nav.hobby":"Hobby","nav.contact":"Contacto",
+    "hero.tag":"Abierto a nuevas oportunidades",
+    "hero.subtitle":"Informático con una licenciatura en Informática para Empresas Digitales y un perfil diverso que abarca modelado 3D, desarrollo de software y gestión de eventos. Apasionado por los datos, la web y las nuevas tecnologías.",
+    "hero.cta1":"Contáctame →","hero.cta2":"Ver mi trayectoria","hero.scroll":"Scroll",
+    "edu.eyebrow":"Trayectoria académica","edu.title":"Formación",
+    "edu.p1.period":"2024 – En curso",
+    "edu.p1.title":"Grado en Informática para Empresas Digitales (L-31)",
+    "edu.p1.body":"Continuación de los estudios comenzados en Florencia. Asignaturas finales: Cálculo, Probabilidad y Estadística, Programación 2, Redes de Computadores y Ciberseguridad, Tecnologías Web.",
+    "edu.p2.title":"Informática L-31",
+    "edu.p2.body":"Grado universitario en Informática con foco en algoritmos, arquitecturas, bases de datos, sistemas operativos y programación concurrente. Erasmus de 5 meses en Madrid con asignaturas de Robótica e Ingeniería del Software.",
+    "edu.p3.title":"Técnico en Diseño, Modelado y Renderizado para Mobiliario",
+    "edu.p3.body":"Curso profesional centrado en modelado 3D (AutoCAD, Rhinoceros), edición de imágenes con Photoshop, diseño CAD 2D y renderizado con Blender.",
+    "edu.p4.title":"Ingeniería de Gestión (no finalizada)",
+    "edu.p4.body":"Primera experiencia universitaria, interrumpida para redirigir el camino hacia una vocación más auténtica por la informática.",
+    "edu.p5.title":"Bachillerato Científico — 75/100",
+    "edu.p5.body":"Sólida base científica: matemáticas, física y química.",
+    "tag.algo":"Algoritmos y Estructuras de Datos","tag.db":"Bases de Datos","tag.so":"Sistemas Operativos","tag.rob":"Robótica",
+    "tag.log":"Logística","tag.acc":"Contabilidad","tag.sup":"Proveedores","tag.saf":"Seguridad","tag.sea":"Estacional",
+    "work.eyebrow":"Experiencia profesional","work.title":"Experiencia",
+    "work.w1.period":"2015 – Actualidad","work.w1.role":"Organizador de Eventos",
+    "work.w1.desc":"Gestión logística y montaje de eventos nocturnos. Coordinación con proveedores y propietarios de locales, gestión de contabilidad y elaboración del balance final.",
+    "work.w2.period":"Ene 2020 – Jul 2020","work.w2.role":"Operador de Call Center",
+    "work.w2.desc":"Gestión de información de equipaje, reclamaciones por retrasos, cancelaciones, reembolsos y pérdidas. Atención telefónica y gestión de tickets por correo electrónico.",
+    "work.w3.period":"May 2018 – May 2019","work.w3.role":"Técnico de Modelado 3D",
+    "work.w3.desc":"Creación de aproximadamente 9.000 modelos 3D de electrodomésticos para el programa de realidad virtual Virtuo. Introducción de datos en Excel y base de datos SQL. Edición de texturas con Photoshop.",
+    "work.w4.period":"Temporadas 2017–2025","work.w4.role":"Socorrista",
+    "work.w4.desc":"Trabajo estacional repetido durante varios años (2017, 2019, 2022, 2023, 2024, 2025). Supervisión de la piscina, mantenimiento de la limpieza y los espacios circundantes, atención al cliente.",
+    "work.github":"Proyectos en GitHub",
+    "repo.r1":"Panel interactivo para la visualización y análisis de datos.",
+    "repo.r2":"Recopilación y procesamiento de estadísticas de partidos de las principales ligas europeas con SQL.",
+    "repo.r3":"Recopilación y análisis de datos de partidos de las ligas europeas mediante archivos CSV.",
+    "repo.r4":"Laboratorio de robótica desarrollado durante el Erasmus en Madrid. Proyecto en C.",
+    "repo.r5":"Videojuego inspirado en Plants vs. Zombies, desarrollado en Java como proyecto universitario.",
+    "repo.all":"Ver todos los proyectos",
+    "skills.eyebrow":"Competencias","skills.title":"Soft Skills & Tecnologías",
+    "skills.s1.name":"Resolución de Problemas","skills.s1.desc":"Desarrollé esta actitud desde los estudios de ingeniería, afinándola a través del desarrollo de proyectos de software, el modelado de 9.000 activos 3D y la gestión de situaciones críticas en atención al cliente.",
+    "skills.s2.name":"Trabajo en Equipo","skills.s2.desc":"La organización de eventos me enseñó a coordinar equipos heterogéneos bajo presión. La experiencia Erasmus desarrolló aún más mi capacidad de colaborar en entornos multiculturales.",
+    "skills.s3.name":"Comunicación","skills.s3.desc":"Años de atención telefónica y gestión directa de clientes me han capacitado para comunicarme de forma clara, empática y eficaz, también en español gracias a mi experiencia en Sevilla.",
+    "skills.s4.name":"Organización y Gestión","skills.s4.desc":"Desde la planificación logística de eventos hasta la gestión de bases de datos con miles de registros: me caracteriza una fuerte aptitud para la organización sistemática y la gestión de prioridades.",
+    "skills.stack":"Stack Tecnológico","skills.cyber":"Ciberseguridad (básico)",
+    "hobby.eyebrow":"Quién soy fuera de la oficina","hobby.title":"Hobby y Pasiones",
+    "hobby.h1.name":"Deporte y Actividad Física","hobby.h1.desc":"Trabajar durante años como socorrista refleja mi relación constante con el movimiento físico. Ya sea natación, gimnasio o deportes al aire libre, el cuidado del cuerpo es parte integral de mi estilo de vida.",
+    "hobby.h2.name":"Música y Arte","hobby.h2.desc":"La creatividad es un rasgo que atraviesa toda mi vida, desde el modelado 3D artístico hasta el sentido estético que aplico en mis proyectos digitales. La música es la banda sonora de cada día.",
+    "hobby.h3.name":"Viajes y Experiencias","hobby.h3.desc":"El Erasmus en Madrid y el trabajo en Sevilla encendieron en mí la pasión por los viajes y las distintas culturas. Enfrentarse a nuevas realidades es para mí una fuente inagotable de crecimiento personal.",
+    "contact.eyebrow":"Hablemos","contact.title":"Contacto",
+    "contact.lead":"Estoy abierto a nuevas oportunidades laborales, colaboraciones en proyectos digitales o simplemente una buena conversación sobre el mundo tech. ¡No dudes en contactarme!",
+    "contact.btn":"Escríbeme un email →","contact.phone":"Teléfono",
+    "contact.loc.label":"Ubicación","contact.loc.value":"Sarteano (SI), Toscana — Italia",
+    "footer.made":"Hecho"
+  }
+};
+
+// ═══════════════════════════ APPLY LANGUAGE ═══════════════════════════
+function applyLang(lang) {
+  const dict = i18n[lang];
+  if (!dict) return;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key] !== undefined) el.textContent = dict[key];
+  });
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  // smooth fade
+  const content = document.getElementById('pageContent');
+  if (content) {
+    content.style.opacity = '0';
+    content.style.transform = 'translateY(6px)';
+    setTimeout(() => {
+      content.style.transition = 'opacity .3s ease, transform .3s ease';
+      content.style.opacity = '1';
+      content.style.transform = 'translateY(0)';
+    }, 10);
+  }
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+});
+
+// ═══════════════════════════ CURSOR ═══════════════════════════
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+(function animateCursor(){
+  cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+  rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animateCursor);
+})();
+
+// ═══════════════════════════ NAVBAR ═══════════════════════════
+const navbar=document.getElementById('navbar');
+window.addEventListener('scroll',()=>{ navbar.classList.toggle('shrunk',window.scrollY>60); });
+
+// ═══════════════════════════ HAMBURGER ═══════════════════════════
+const hamburger=document.getElementById('hamburger');
+const mobileMenu=document.getElementById('mobileMenu');
+hamburger.addEventListener('click',()=>{
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow=mobileMenu.classList.contains('open')?'hidden':'';
+});
+document.querySelectorAll('.mobile-link').forEach(link=>{
+  link.addEventListener('click',()=>{
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow='';
+  });
+});
+
+// ═══════════════════════════ SCROLL REVEAL ═══════════════════════════
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); } });
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
